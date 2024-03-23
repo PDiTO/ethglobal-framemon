@@ -7,14 +7,12 @@ import { baseSepolia } from "viem/chains";
 import contractAbi from "../config/abi.json";
 import { MonDataResponse } from "../types/framemon";
 
-export const publicClient = createPublicClient({
+const publicClient = createPublicClient({
   chain: baseSepolia,
   transport: http(process.env.RPC_URL),
 });
 
-export async function monData(
-  address: string
-): Promise<MonDataResponse | Error> {
+async function monData(address: string): Promise<MonDataResponse | Error> {
   try {
     const response: any = await publicClient.readContract({
       address: process.env.CONTRACT_ADDRESS as "0x",
