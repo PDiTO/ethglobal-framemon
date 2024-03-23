@@ -4,7 +4,7 @@ import { getAddressForFid, getTokenUrl } from "frames.js";
 import { createWalletClient, http, createPublicClient } from "viem";
 import { baseSepolia } from "viem/chains";
 
-import contractAbi from "../../contracts/out/FrameMonNFT.sol/FrameMonNFT.json";
+import contractAbi from "../config/abi.json";
 import { MonDataResponse } from "../types/framemon";
 
 export const publicClient = createPublicClient({
