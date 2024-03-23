@@ -1,7 +1,53 @@
 /* eslint-disable react/jsx-key */
 import { Button, createFrames } from "frames.js/next";
 import { getAddressForFid, getTokenUrl } from "frames.js";
-import { zora } from "viem/chains";
+import { createWalletClient, http, createPublicClient } from "viem";
+import { baseSepolia } from "viem/chains";
+
+import contractAbi from "../../contracts/out/FrameMonNFT.sol/FrameMonNFT.json";
+import { MonDataResponse } from "../types/framemon";
+
+export const publicClient = createPublicClient({
+  chain: baseSepolia,
+  transport: http(process.env.RPC_URL),
+});
+
+export async function monData(
+  address: string
+): Promise<MonDataResponse | Error> {
+  try {
+    const response: any = await publicClient.readContract({
+      address: process.env.CONTRACT_ADDRESS as "0x",
+      abi: contractAbi.abi,
+      functionName: "getMon",
+      args: [address],
+    });
+
+    // Assuming the response structure is as you've provided
+    const formattedResponse: MonDataResponse = {
+      frameMon: {
+        tokenId: response[0].tokenId,
+        owner: response[0].owner,
+        name: response[0].name,
+        birthDate: response[0].birthDate,
+        moodUpdate: response[0].moodUpdate,
+        energyUpdate: response[0].energyUpdate,
+        socialUpdate: response[0].socialUpdate,
+        mood: response[0].mood,
+        energy: response[0].energy,
+        social: response[0].social,
+      },
+      mood: response[1],
+      energy: response[2],
+      social: response[3],
+    };
+
+    return formattedResponse;
+  } catch (error: any) {
+    console.error(error);
+    return error;
+  }
+}
 
 const frames = createFrames({
   basePath: "/frames",
@@ -17,7 +63,7 @@ const handleRequest = frames(async (ctx) => {
     options: { fallbackToCustodyAddress: true },
   });
 
-  console.log(fid, address);
+  const mon = await monData(address);
 
   if (page === "initial") {
     return {
@@ -53,6 +99,54 @@ const handleRequest = frames(async (ctx) => {
           Refresh
         </Button>,
       ],
+    };
+  }
+
+  if (mon instanceof Error) {
+    return {
+      image: (
+        <span>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            There was an error. Please refresh.
+          </div>
+        </span>
+      ),
+      buttons: [
+        <Button action="post" target="/">
+          Refresh
+        </Button>,
+      ],
+    };
+  }
+
+  if (mon && mon.frameMon.tokenId === BigInt(0)) {
+    const tokenUrl = getTokenUrl({
+      address: process.env.CONTRACT_ADDRESS as "0x",
+      chain: baseSepolia,
+    });
+
+    // Sign up
+    return {
+      image: (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          Loaded but no mon.
+        </div>
+      ),
+      buttons: [
+        <Button action="mint" target={tokenUrl}>
+          Mint Monster
+        </Button>,
+      ],
+    };
+  }
+
+  if (mon && mon.frameMon.tokenId !== BigInt(0)) {
+    return {
+      image: (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          Loaded mon {mon.frameMon.name}.
+        </div>
+      ),
     };
   }
 
