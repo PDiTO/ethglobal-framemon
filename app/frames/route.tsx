@@ -79,7 +79,7 @@ const handleRequest = frames(async (ctx) => {
       ),
       buttons: [
         <Button action="post" target={{ query: { page: "start" } }}>
-          Let's Go
+          Lets Go
         </Button>,
       ],
     };
