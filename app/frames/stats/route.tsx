@@ -1,11 +1,11 @@
 /* eslint-disable react/jsx-key */
 import { Button, createFrames } from "frames.js/next";
-import { getAddressForFid, getTokenUrl } from "frames.js";
-import { createWalletClient, http, createPublicClient } from "viem";
+import { getAddressForFid } from "frames.js";
+import { http, createPublicClient } from "viem";
 import { baseSepolia } from "viem/chains";
 
-import contractAbi from "../config/abi.json";
-import { MonDataResponse } from "../types/framemon";
+import contractAbi from "../../config/abi.json";
+import { MonDataResponse } from "../../types/framemon";
 
 const publicClient = createPublicClient({
   chain: baseSepolia,
@@ -52,8 +52,6 @@ const frames = createFrames({
 });
 
 const handleRequest = frames(async (ctx) => {
-  const page = ctx.searchParams?.page ?? "initial";
-
   const fid = ctx.message?.requesterFid;
 
   const address = await getAddressForFid({
@@ -62,26 +60,6 @@ const handleRequest = frames(async (ctx) => {
   });
 
   const mon = await monData(address);
-
-  if (page === "initial") {
-    return {
-      image: (
-        <div
-          tw="flex flex-col text-red-500 justify-center items-center bg-violet-900"
-          style={{ width: "100%", height: "100%" }}
-        >
-          <div tw="text-[64px] font-black text-white">FrameMon</div>
-          <div tw="text-white font-bold">A little monster, in a Frame</div>
-          {/* <img src="/cat01_idle_8fps.gif" /> */}
-        </div>
-      ),
-      buttons: [
-        <Button action="post" target={{ query: { page: "start" } }}>
-          Lets Go
-        </Button>,
-      ],
-    };
-  }
 
   if (fid === 0) {
     return {
@@ -137,18 +115,15 @@ const handleRequest = frames(async (ctx) => {
     return {
       image: (
         <div style={{ display: "flex", flexDirection: "column" }}>
-          Loaded mon {mon.frameMon.name}.
+          <div>Hey it's {mon.frameMon.name}.</div>
+          <div>Mood: {mon.mood}</div>
+          <div>Energy: {mon.energy}</div>
+          <div>Social: {mon.social}</div>
         </div>
       ),
       buttons: [
-        <Button action="tx" target="tx-pet" post_url="/">
-          Pet
-        </Button>,
-        <Button action="tx" target="tx-feed" post_url="/">
-          Feed
-        </Button>,
-        <Button action="post" target="/stats">
-          Stats
+        <Button action="post" target="/">
+          Back
         </Button>,
       ],
     };
