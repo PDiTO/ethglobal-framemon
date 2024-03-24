@@ -30,6 +30,10 @@ contract FrameMonNFT is ERC721, AccessControl {
 
     function mint(string memory _name) external returns (uint256) {
         tokenIds++;
+        require(
+            ownerToTokenId[msg.sender] == 0,
+            "FrameMonNFT: already has a FrameMon"
+        );
         ownerToTokenId[msg.sender] = tokenIds;
 
         FrameMon memory frameMon = FrameMon({

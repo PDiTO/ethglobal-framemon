@@ -63,6 +63,8 @@ const handleRequest = frames(async (ctx) => {
 
   const mon = await monData(address);
 
+  console.log(mon);
+
   if (page === "initial") {
     return {
       image: (
@@ -118,11 +120,6 @@ const handleRequest = frames(async (ctx) => {
   }
 
   if (mon && mon.frameMon.tokenId === BigInt(0)) {
-    const tokenUrl = getTokenUrl({
-      address: process.env.CONTRACT_ADDRESS as "0x",
-      chain: baseSepolia,
-    });
-
     // Sign up
     return {
       image: (
@@ -131,8 +128,8 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="mint" target={tokenUrl}>
-          Mint Monster
+        <Button action="tx" target="/tx-mint" post_url="/">
+          Mint Monsters
         </Button>,
       ],
     };
