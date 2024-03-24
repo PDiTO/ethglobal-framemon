@@ -95,27 +95,11 @@ const handleRequest = frames(async (ctx) => {
     };
   }
 
-  if (mon && mon.frameMon.tokenId === BigInt(0)) {
-    // Sign up
-    return {
-      image: (
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          Loaded but no mon.
-        </div>
-      ),
-      buttons: [
-        <Button action="tx" target="/tx-mint" post_url="/">
-          Mint Monsters
-        </Button>,
-      ],
-    };
-  }
-
   if (mon && mon.frameMon.tokenId !== BigInt(0)) {
     return {
       image: (
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div>Hey it's {mon.frameMon.name}.</div>
+          <div>Hey its {mon.frameMon.name}.</div>
           <div>Mood: {mon.mood}</div>
           <div>Energy: {mon.energy}</div>
           <div>Social: {mon.social}</div>
